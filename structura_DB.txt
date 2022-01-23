@@ -1,0 +1,233 @@
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS rezultat;
+DROP TABLE IF EXISTS examen;
+DROP TABLE IF EXISTS proba;
+DROP TABLE IF EXISTS elev;
+DROP TABLE IF EXISTS liceu_profil;
+DROP TABLE IF EXISTS profil;
+DROP TABLE IF EXISTS liceu;
+
+/*--------------------------------------------------
+USERS [nume,prenume,username,parola]
+	nume ->
+	prenume ->
+	cnp ->
+	username->
+	parola ->
+	functie -> admin/elev
+--------------------------------------------------*/
+CREATE TABLE users (
+nume		 	VARCHAR(20) 		NOT NULL,
+prenume 	 	VARCHAR(20)	 	    NOT NULL,
+cnp		 	 	VARCHAR(13)	    	NOT NULL,
+username 	 	VARCHAR(20)	    	NOT NULL,
+parola 		 	VARCHAR(20) 	 	NOT NULL,
+functie 		VARCHAR(10)  		NOT NULL,
+UNIQUE (cnp));
+
+/*--------------------------------------------------
+LICEU [codl, denl, adresal]
+	codl ->
+	denl -> 
+	adresal -> 
+--------------------------------------------------*/
+CREATE TABLE liceu (
+codl 		int 		 	NOT NULL,
+denl 		VARCHAR(50) 	NOT NULL,
+adresal 	VARCHAR(20) 	NOT NULL,
+PRIMARY KEY (codl));
+
+/*--------------------------------------------------
+PROFIL [codp, denp]
+	codp -> 
+	denp -> 
+--------------------------------------------------*/
+CREATE TABLE profil (
+codp 		int 			NOT NULL,
+denp 		VARCHAR(30) 	NOT NULL,
+PRIMARY KEY (codp));
+
+/*--------------------------------------------------
+LICEU_PROFIL [codlp, codl, codp]
+	codlp ->
+	codl ->
+	codp ->
+--------------------------------------------------*/
+CREATE TABLE liceu_profil (
+codlp 			int 		AUTO_INCREMENT,
+codl 			int 		NOT NULL,
+codp 			int 		NOT NULL,
+PRIMARY KEY (codlp),
+FOREIGN KEY (codl) REFERENCES liceu(codl),
+FOREIGN KEY (codp) REFERENCES profil(codp));
+
+/*--------------------------------------------------
+ELEV [code, nume, init_tata, prenume, cnp, codp, codl]
+	code -> 
+	nume -> 
+	init_tata ->
+	prenume ->
+	cnp ->
+	codlp -> 
+--------------------------------------------------*/
+CREATE TABLE elev (
+code 			int 			 	AUTO_INCREMENT,
+nume 			VARCHAR(20) 		NOT NULL,
+init_tata 		CHAR(1) 			NOT NULL,
+prenume 		VARCHAR(20) 		NOT NULL,
+cnp 			CHAR(13) 			NOT NULL,
+codlp 			int 	 			NOT NULL,
+PRIMARY KEY (code),
+FOREIGN KEY (codlp) REFERENCES liceu_profil(codlp),
+UNIQUE (cnp));
+
+/*--------------------------------------------------
+PROBA [codpr, denpr, tip_proba, codp]
+	codpr ->
+	denpr ->
+	tip_proba ->1/2/3
+	codp ->
+--------------------------------------------------*/
+CREATE TABLE proba (
+codpr 			int  			AUTO_INCREMENT,
+denpr 			VARCHAR(40) 	NOT NULL,
+tip_proba 		int 	 		NOT NULL,
+codp 			int 	 		NOT NULL,
+PRIMARY KEY (codpr),
+FOREIGN KEY (codp) REFERENCES profil(codp));
+
+/*--------------------------------------------------
+EXAMEN [codex, code, codpr]
+	codex ->
+	code ->
+	codpr ->
+--------------------------------------------------*/
+CREATE TABLE examen (
+codex 			int 	 		AUTO_INCREMENT,
+code 			int 	 		NOT NULL,
+codpr 			int 	 		NOT NULL,
+PRIMARY KEY (codex),
+FOREIGN KEY (code) REFERENCES elev(code),
+FOREIGN KEY (codpr) REFERENCES proba(codpr));
+
+/*--------------------------------------------------
+REZULTAT [id,codex, nota_init, nota_cont]
+	id->
+	codex ->
+	nota_init ->nota initiala
+	nota_cont ->nota dupa contestatie
+--------------------------------------------------*/
+CREATE TABLE rezultat (
+id			 	int		 	AUTO_INCREMENT,
+codex 			int 		NOT NULL,
+nota_init 		DECIMAL(4,2),
+nota_cont 		DECIMAL(4,2),
+PRIMARY KEY (id),
+FOREIGN KEY (codex) REFERENCES examen(codex));
+/*--------------------------------------------------*/
+CREATE TABLE log (
+id				int 	 			AUTO_INCREMENT,
+user		  	VARCHAR(20) 		NOT NULL,
+rol 	 	 	VARCHAR(10)	 	    NOT NULL,
+date		  	DATETIME 	    	NOT NULL,
+actiune 	  	VARCHAR(20) 	    NOT NULL,
+descriere 	  	VARCHAR(255) 	    NOT NULL,
+PRIMARY KEY (id));
+
+DESCRIBE liceu; 
+DESCRIBE profil; 
+DESCRIBE elev; 
+DESCRIBE liceu_profil; 
+DESCRIBE examen; 
+DESCRIBE proba; 
+DESCRIBE rezultat; 
+DESCRIBE users;
+
+delete from users;
+delete from rezultat;
+delete from examen;
+delete from proba;
+delete from elev;
+delete from liceu_profil;
+delete from profil;
+delete from liceu;
+
+
+INSERT INTO liceu VALUES(1,'Colegiul National "M. Kogalniceanu"','Galati');
+INSERT INTO liceu VALUES(2,'Colegiul National "C. Negri"','Galati');
+INSERT INTO liceu VALUES(3,'Colegiul National "V. Alecsandri"','Galati');
+INSERT INTO liceu VALUES(4,'Colegiul National "Al. I. Cuza"','Galati');
+INSERT INTO liceu VALUES(5,'Liceul Teoretic "E. Racovita"','Galati');
+INSERT INTO liceu VALUES(6,'Liceul Teoretic "Dunarea"','Galati');
+
+
+INSERT INTO profil VALUES(51,'Matematica-Informatica');
+INSERT INTO profil VALUES(52,'Stiinte ale Naturii');
+INSERT INTO profil VALUES(53,'Stiinte Sociale');
+INSERT INTO profil VALUES(54,'Filologie');
+		
+
+
+INSERT INTO proba VALUES(null,'Informatica',3,51);
+INSERT INTO proba VALUES(null,'Fizica',3,51);
+INSERT INTO proba VALUES(null,'Chimie',3,51);
+INSERT INTO proba VALUES(null,'Biologie',3,51);
+INSERT INTO proba VALUES(null,'Informatica',3,52);
+INSERT INTO proba VALUES(null,'Fizica',3,52);
+INSERT INTO proba VALUES(null,'Chimie',3,52);
+INSERT INTO proba VALUES(null,'Biologie',3,52);
+INSERT INTO proba VALUES(null,'Geografie',3,53);
+INSERT INTO proba VALUES(null,'Logica si argumentare',3,53);
+INSERT INTO proba VALUES(null,'Psihologie',3,53);
+INSERT INTO proba VALUES(null,'Economie',3,53);
+INSERT INTO proba VALUES(null,'Sociologie',3,53);
+INSERT INTO proba VALUES(null,'Filosofie',3,53);
+INSERT INTO proba VALUES(null,'Geografie',3,54);
+INSERT INTO proba VALUES(null,'Logica si argumentare',3,54);
+INSERT INTO proba VALUES(null,'Psihologie',3,54);
+INSERT INTO proba VALUES(null,'Economie',3,54);
+INSERT INTO proba VALUES(null,'Sociologie',3,54);
+INSERT INTO proba VALUES(null,'Filosofie',3,54);
+INSERT INTO proba VALUES(null,'Matematica M1',2,51);
+INSERT INTO proba VALUES(null,'Limba si literatura romana real',1,51);
+INSERT INTO proba VALUES(null,'Matematica M2',2,52);
+INSERT INTO proba VALUES(null,'Limba si literatura romana real',1,52);
+INSERT INTO proba VALUES(null,'Istorie',2,53);
+INSERT INTO proba VALUES(null,'Limba si literatura romana uman',1,53);
+INSERT INTO proba VALUES(null,'Istorie',2,54);
+INSERT INTO proba VALUES(null,'Limba si literatura romana uman',1,54);
+
+/*
+INSERT INTO proba VALUES(null,'Informatica',3,51),(null,'Fizica',3,51),(null,'Chimie',3,51),(null,'Biologie',3,51),(null,'Informatica',3,52),(null,'Fizica',3,52),(null,'Chimie',3,52),(null,'Biologie',3,52),(null,'Geografie',3,53),(null,'Logica si argumentare',3,53),(null,'Psihologie',3,53),(null,'Economie',3,53),(null,'Sociologie',3,53),(null,'Filosofie',3,53),(null,'Geografie',3,54),(null,'Logica si argumentare',3,54),(null,'Psihologie',3,54),(null,'Economie',3,54),(null,'Sociologie',3,54),(null,'Filosofie',3,54),(null,'Matematica M1',2,51),(null,'Limba si literatura romana real',1,51),(null,'Matematica M2',2,52),(null,'Limba si literatura romana real',1,52),(null,'Istorie',2,53),(null,'Limba si literatura romana uman',1,53),(null,'Istorie',2,54),(null,'Limba si literatura romana uman',1,54);
+*/
+
+
+
+INSERT INTO liceu_profil VALUES(null,1,51);
+INSERT INTO liceu_profil VALUES(null,1,52);
+INSERT INTO liceu_profil VALUES(null,1,53);
+INSERT INTO liceu_profil VALUES(null,1,54);
+INSERT INTO liceu_profil VALUES(null,2,51);
+INSERT INTO liceu_profil VALUES(null,2,52);
+INSERT INTO liceu_profil VALUES(null,2,53);
+INSERT INTO liceu_profil VALUES(null,2,54);
+INSERT INTO liceu_profil VALUES(null,3,51);
+INSERT INTO liceu_profil VALUES(null,3,52);
+INSERT INTO liceu_profil VALUES(null,3,53);
+INSERT INTO liceu_profil VALUES(null,3,54);
+INSERT INTO liceu_profil VALUES(null,4,51);
+INSERT INTO liceu_profil VALUES(null,4,54);
+INSERT INTO liceu_profil VALUES(null,5,52);
+INSERT INTO liceu_profil VALUES(null,5,54);
+INSERT INTO liceu_profil VALUES(null,6,51);
+INSERT INTO liceu_profil VALUES(null,6,52);
+INSERT INTO liceu_profil VALUES(null,6,53);
+
+/*
+INSERT INTO liceu_profil VALUES(null,1,51),(null,1,52),(null,1,53),(null,1,54),(null,2,51),(null,2,52),(null,2,53),(null,2,54),(null,3,51),(null,3,52),(null,3,53),(null,3,54),(null,4,51),(null,4,54),(null,5,52),(null,5,54),(null,6,51),(null,6,52),(null,6,53);
+*/
+
+
+insert into users values('Admin','Administrator','1936566295381','admin','admin','admin');
+commit;
+
